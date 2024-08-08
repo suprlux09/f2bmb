@@ -2,16 +2,20 @@
 
 # 환경 설정
 NODE_NAME=node1  # Should be unique
-
-RECEIVER_IP=localhost
-RECEIVER_USERNAME=user
-RECEIVER_PW=password
-
 FAIL2BAN_LOG_PATH=/var/log/fail2ban.log
 PATTERN='Ban [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*$'
 
+# .env 파일 로드
+# RECEIVER_IP, RECEIVER_USERNAME, RECEIVER_PW, RECEIVER_PATH
+if [[ -f .env ]]; then
+  export $(cat .env | xargs)
+else
+  echo "No .env file found"
+  exit 1
+fi
+
 LATEST_LOG_TS=$(ls -1 ./logfiles | sort -n | tail -n 1)
-if [ -z "$LATEST_LOG_TS" ]; then
+if [[ -z "$LATEST_LOG_TS" ]]; then
     LATEST_LOG_TS=0
 fi
 CURRENT_TS=$(date +%s)
@@ -19,23 +23,30 @@ CURRENT_TS=$(date +%s)
 
 # fail2ban 로그에서 banned IP를 찾고
 # 차단시간, 필터, IP주소를 추출한다
-grep -E "$PATTERN" $FAIL2BAN_LOG_PATH | tac | while read line;
+grep -E "$PATTERN" "$FAIL2BAN_LOG_PATH" | tac | while read line;
 do
-    time=$(echo $line | awk '{gsub(/,.*$/, "", $2); print $1, $2}')
-    filter=`echo $line | awk '{print $6}'`
-    ip_addr=`echo $line | awk '{print $8}'`
+    time=$(echo "$line" | awk '{gsub(/,.*$/, "", $2); print $1, $2}')
+    filter=`echo "$line" | awk '{print $6}'`
+    ip_addr=`echo "$line" | awk '{print $8}'`
 
     # 로그 시각이 최신 로그 시각보다 이전이면 무시
     time_ts=`date -d "$time" +%s`
     diff_ts=$((time_ts - LATEST_LOG_TS))
 
-    if [ $diff_ts -le 0 ]; then
+    if [[ $diff_ts -le 0 ]]; then
         break
     fi
     
-    echo -e "$time $filter $ip_addr" >> ./logfiles/tmp
+    echo "$time $filter $ip_addr" >> ./logfiles/tmp
 done
 
+
 # 로그파일이 시간 기준 역순으로 정렬되어 있으므로 재정렬 후 전송
+# 전송할 것 없으면 종료
+if [[ ! -e ./logfiles/tmp ]]; then
+    echo "No new log to send"
+    exit 0
+fi
 cat ./logfiles/tmp | tac > ./logfiles/$CURRENT_TS
 rm ./logfiles/tmp
+sshpass -p $RECEIVER_PW scp ./logfiles/$CURRENT_TS $RECEIVER_USERNAME@$RECEIVER_IP:$RECEIVER_PATH
