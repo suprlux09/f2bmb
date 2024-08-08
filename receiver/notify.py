@@ -20,11 +20,11 @@ async def main():
     for hostname in os.listdir("./logfiles"):
         for line in open("./logfiles/" + hostname):
             time = re.findall(r"^\d+\-\d+\-\d+\s\d+\:\d+\:\d+", line)[0]
-            service = re.findall(r"\[.*\]", line)[0][1:-1]
-            ip = re.findall(r"\d+\.\d+\.\d+\.\d+$", line)[0]
+            filter = re.findall(r"\[.*\]", line)[0][1:-1]
+            ip_addr = re.findall(r"\d+\.\d+\.\d+\.\d+$", line)[0]
 
             # send message to telegram
-            await bot.send_message(chat_id=userid, text=f"Time: {time}\nService: {service}\nIP: {ip}")
+            await bot.send_message(chat_id=userid, text=f"Time: {time}\nFilter: {filter}\nIP: {ip_addr}")
         
 if __name__ == '__main__':
     asyncio.run(main())
