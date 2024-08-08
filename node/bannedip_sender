@@ -1,12 +1,11 @@
 #!/bin/bash
 
 # 환경 설정
-NODE_NAME=node1  # Should be unique
 FAIL2BAN_LOG_PATH=/var/log/fail2ban.log
 PATTERN='Ban [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*$'
 
 # .env 파일 로드
-# RECEIVER_IP, RECEIVER_USERNAME, RECEIVER_PW, RECEIVER_PATH
+# NODE_NAME, RECEIVER_IP, RECEIVER_USERNAME, RECEIVER_PW, RECEIVER_PATH
 if [[ -f .env ]]; then
   export $(cat .env | xargs)
 else
