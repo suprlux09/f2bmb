@@ -7,18 +7,24 @@ PATTERN='Ban [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*$'
 # .env 파일 로드
 # NODE_NAME, RECEIVER_IP, RECEIVER_USERNAME, RECEIVER_PW, RECEIVER_PATH
 if [[ -f .env ]]; then
-  export $(cat .env | xargs)
+    while read -r line; do
+	export $( eval echo "$line" )
+    done <".env"
 else
-  echo "No .env file found"
-  exit 1
+    echo "No .env file found"
+    exit 1
 fi
 
+# 마지막 로그 기록 시각, 현재 시각
 LATEST_LOG_TS=$(ls -1 ./logfiles | sort -n | tail -n 1)
 if [[ -z "$LATEST_LOG_TS" ]]; then
     LATEST_LOG_TS=0
 fi
 CURRENT_TS=$(date +%s)
 
+if [[ ! -d "logfiles" ]]; then
+    mkdir logfiles
+fi    
 
 # fail2ban 로그에서 banned IP를 찾고
 # 차단시간, 필터, IP주소를 추출한다
@@ -48,4 +54,4 @@ if [[ ! -e ./logfiles/tmp ]]; then
 fi
 cat ./logfiles/tmp | tac > ./logfiles/$CURRENT_TS
 rm ./logfiles/tmp
-sshpass -p $RECEIVER_PW scp ./logfiles/$CURRENT_TS $RECEIVER_USERNAME@$RECEIVER_IP:$RECEIVER_PATH
+sshpass -p $RECEIVER_PW scp -P 22311 ./logfiles/$CURRENT_TS $RECEIVER_USERNAME@$RECEIVER_IP:$RECEIVER_PATH
