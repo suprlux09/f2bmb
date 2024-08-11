@@ -2,7 +2,7 @@
 
 # 환경 설정
 FAIL2BAN_LOG_PATH=/var/log/fail2ban.log
-PATTERN='Ban [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*$'
+PATTERN='(Found|Ban) [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*'
 
 # .env 파일 로드
 # NODE_NAME, RECEIVER_IP, RECEIVER_USERNAME, RECEIVER_PW, RECEIVER_PATH
@@ -26,12 +26,13 @@ if [[ ! -d "logfiles" ]]; then
     mkdir logfiles
 fi    
 
-# fail2ban 로그에서 banned IP를 찾고
-# 차단시간, 필터, IP주소를 추출한다
+# fail2ban 로그에서 탐지된 IP를 찾고
+# 시간, 필터, IP주소, 차단/탐지 여부를 추출한다
 grep -E "$PATTERN" "$FAIL2BAN_LOG_PATH" | tac | while read line;
 do
     time=$(echo "$line" | awk '{gsub(/,.*$/, "", $2); print $1, $2}')
     filter=`echo "$line" | awk '{print $6}'`
+    action=`echo "$line" | awk '{print $7}'`
     ip_addr=`echo "$line" | awk '{print $8}'`
 
     # 로그 시각이 최신 로그 시각보다 이전이면 무시
@@ -42,7 +43,7 @@ do
         break
     fi
     
-    echo "$time $filter $ip_addr" >> ./logfiles/tmp
+    echo "$time $filter $ip_addr $action" >> ./logfiles/tmp
 done
 
 
