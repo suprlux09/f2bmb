@@ -1,0 +1,5 @@
+inotifywait -m ./logfiles -e create,modify |
+while read _; do
+    source venv/bin/activate
+    python3 ./notify.py
+done

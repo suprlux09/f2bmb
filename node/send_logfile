@@ -2,10 +2,10 @@
 
 # 환경 설정
 FAIL2BAN_LOG_PATH=/var/log/fail2ban.log
-PATTERN='(Found|Ban) [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*'
+PATTERN='\] (Found|Ban) [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*'
 
 # .env 파일 로드
-# NODE_NAME, RECEIVER_IP, RECEIVER_USERNAME, RECEIVER_PW, RECEIVER_PATH
+# NODE_NAME, RECEIVER_IP, RECEIVER_USERNAME, RECEIVER_PW, RECEIVER_PATH, RECEIVER_PORT
 if [[ -f .env ]]; then
     while read -r line; do
 	export $( eval echo "$line" )
@@ -13,6 +13,11 @@ if [[ -f .env ]]; then
 else
     echo "No .env file found"
     exit 1
+fi
+
+# RECEIVER_PORT가 없을 시 22로 지정
+if [[ -z "$RECEIVER_PORT" ]]; then
+    RECEIVER_PORT=22
 fi
 
 # 마지막 로그 기록 시각, 현재 시각
@@ -55,4 +60,4 @@ if [[ ! -e ./logfiles/tmp ]]; then
 fi
 cat ./logfiles/tmp | tac > ./logfiles/$CURRENT_TS
 rm ./logfiles/tmp
-sshpass -p $RECEIVER_PW scp -P 22311 ./logfiles/$CURRENT_TS $RECEIVER_USERNAME@$RECEIVER_IP:$RECEIVER_PATH
+sshpass -p $RECEIVER_PW scp -P $RECEIVER_PORT ./logfiles/$CURRENT_TS $RECEIVER_USERNAME@$RECEIVER_IP:$RECEIVER_PATH
