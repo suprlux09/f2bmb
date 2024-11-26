@@ -60,4 +60,4 @@ if [[ ! -e ./logfiles/tmp ]]; then
 fi
 cat ./logfiles/tmp | tac > ./logfiles/$CURRENT_TS
 rm ./logfiles/tmp
-sshpass -p $RECEIVER_PW scp -P $RECEIVER_PORT ./logfiles/$CURRENT_TS $RECEIVER_USERNAME@$RECEIVER_IP:$RECEIVER_PATH
+sshpass -p $RECEIVER_PW scp -o StrictHostKeyChecking=no -P $RECEIVER_PORT ./logfiles/$CURRENT_TS $RECEIVER_USERNAME@$RECEIVER_IP:$RECEIVER_PATH
