@@ -1,0 +1,48 @@
+Setting up watches.
+Watches established.
+./script: 3: source: not found
+Traceback (most recent call last):
+  File "./notify.py", line 4, in <module>
+    from dotenv import load_dotenv
+ModuleNotFoundError: No module named 'dotenv'
+./script: 3: source: not found
+Traceback (most recent call last):
+  File "./notify.py", line 4, in <module>
+    from dotenv import load_dotenv
+ModuleNotFoundError: No module named 'dotenv'
+Setting up watches.
+Watches established.
+./script: 3: source: not found
+./script: 3: source: not found
+2024-11-26 18:27:16.099737
+2024-11-26 18:27:16.187918
+./script: 3: source: not found
+./script: 3: source: not found
+2024-11-26 18:27:19.602468
+2024-11-26 18:27:19.595197
+./script: 3: source: not found
+./script: 3: source: not found
+2024-11-26 18:29:09.806080
+2024-11-26 18:29:09.898888
+./script: 3: source: not found
+./script: 3: source: not found
+2024-11-26 18:29:13.393428
+2024-11-26 18:29:13.586441
+./script: 3: source: not found
+./script: 3: source: not found
+2024-11-26 18:29:34.484854
+./script: 3: source: not found
+2024-11-26 18:29:34.888136
+./script: 3: source: not found
+2024-11-26 18:29:37.700153
+2024-11-26 18:29:37.807325
+Setting up watches.
+Watches established.
+2024-11-26 18:30:20.012600
+2024-11-26 18:30:21.704368
+2024-11-26 18:31:29.706110
+2024-11-26 18:31:32.613393
+2024-11-26 18:31:43.918134
+2024-11-26 18:31:46.911104
+2024-11-26 18:31:48.610697
+2024-11-26 18:31:54.904841
